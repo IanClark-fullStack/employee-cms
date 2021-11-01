@@ -5,7 +5,7 @@ const fs = require('fs');
 const cTable = require('console.table');
 
 // Inquirer Questions 
-const startUpOptions = ['View all departments', 'View all employees', 'Add a department', 'Add a role', 'Add an employee','Update an emplyoee role'];
+const startUpOptions = ['View all departments', 'View all employees', 'Add a department', 'Add a role', 'Add an employee','Update an emplyoee role', 'End'];
 
 const startPrompt = [
     {
@@ -112,6 +112,9 @@ const sendStartUp = () => {
                 break;
             case 'Update an employee role':
                 updateRole();
+                break;
+            case 'End':
+                db.end();
                 break;
         }
     })
