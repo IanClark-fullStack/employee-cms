@@ -1,0 +1,25 @@
+{
+  "name": "employee-cms",
+  "version": "1.0.0",
+  "description": "Employee CMS Database for Compant Management",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IanClark-fullStack/employee-cms.git"
+  },
+  "author": "Ianclark.fullstack",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IanClark-fullStack/employee-cms/issues"
+  },
+  "homepage": "https://github.com/IanClark-fullStack/employee-cms#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.2"
+  }
+}
