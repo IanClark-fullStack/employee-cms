@@ -30,8 +30,11 @@
  Then run <code>SOURCE seeds.sql;</code> to provide the company with some sample content. 
  
  If all of that sounds complicated, see the video below.
- https://user-images.githubusercontent.com/90655370/140254808-cfca5fee-25c2-4784-b339-c6e4df0e0770.mp4
  
+
+https://user-images.githubusercontent.com/90655370/140254995-0bb641bb-bb27-457f-8455-bec74db0c7d9.mp4
+
+
  
  ## Usage
  ------
