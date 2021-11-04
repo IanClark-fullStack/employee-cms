@@ -33,33 +33,17 @@ const startUpOptions = [
     },
     {
         name: 'Update an employee role',
-        value: 'UPDATE_EMPLOYEE_ROLE'
+        value: 'UPDATE_ROLE'
     },
     {
-        name: 'Update employee manger',
-        value: 'UPDATE_EMPLOYEE_MANAGER'
-    },
-    {
-        name: 'Remove employee',
-        value: 'REMOVE_EMPLOYEE'
-    },
-    {
-        name: 'Remove role',
-        value: 'REMOVE_ROLE'
-    },
-    {
-        name: 'Remove department',
-        value: 'REMOVE_DEPARTMENT'
+        name: 'View Employees by Department',
+        value: 'VIEW_BY_DEPT'
     },
     {
         name: 'Quit',
         value: 'QUIT'
     }
 ];
-// Departments Array 
-let departmentList = [];
-
-
 const startPrompt = [
     {
         type: 'list',
@@ -68,42 +52,16 @@ const startPrompt = [
         message: 'Would what you like to do?'
     }
 ];
-
-const departmentAdd = [
-    {
-        type: 'input',
-        name: 'newDepartmentName',
-        message: 'Enter department name'
-    }
-];
-
-const employeeUpdate = [
-    {
-        type: 'list',
-        name: 'selectEmployee',
-        choices: ['Build', 'Array', 'From', 'Employees DB'], 
-        message: 'Select the employee you would like to update'
-    },
-    {
-        type: 'list',
-        name: 'updateRole',
-        choices: ['Build', 'Array', 'From', 'Employee Role DB'], 
-        message: 'Choose the new role for this employee'
-    }
-];
-
-
-
 const init = () => {
-    console.log('***********************************');
-    console.log('*                                 *');
-    console.log('*        EMPLOYEE MANAGER         *');
-    console.log('*     _______________________     *');
-    console.log('*                                 *');
-    console.log('***********************************');
+    console.log(chalk.greenBright.underline.bold('*******************************************'));
+    console.log(chalk.greenBright.underline.bold('                                           '));
+    console.log(chalk.greenBright.underline.bold('             EMPLOYEE MANAGER              '));
+    console.log(chalk.greenBright.underline.bold('                                           '));
+    console.log(chalk.greenBright.underline.bold('                                           '));
+    console.log(chalk.greenBright.underline.bold('                                           '));
+    console.log(chalk.greenBright.underline.bold('*******************************************\n\n\n'));
     sendStartUp();
 }
-
 const sendStartUp = () => {
     inquirer.prompt(startPrompt)
     .then(({ startUpData }) => {
@@ -120,14 +78,8 @@ const sendStartUp = () => {
             case 'ADD_DEPARTMENT':
                 addDepartment();
                 break;
-            case 'REMOVE_DEPARTMENT':
-                removeDepartment();
-                break;
             case 'ADD_ROLE': 
                 addRole();
-                break;
-            case 'ADD_ROLE':
-                addEmployee();
                 break;
             case 'UPDATE_ROLE':
                 updateRole();
@@ -137,6 +89,9 @@ const sendStartUp = () => {
                 break;
             case 'VIEW_ROLES':
                 viewRoles();
+                break;  
+            case 'VIEW_BY_DEPT':
+                viewEmployeesByDepartment();
                 break;
             case 'REMOVE_ROLES':
                 removeRole();
@@ -147,10 +102,9 @@ const sendStartUp = () => {
         }
     })
 }
-
 // **************** View ALl Employees *** READ All, SELECT employee TABLE (ALL VALUES), job_role TABLE (job_role.title), department TABLE (department_name) FROM employee, job_role and department ORDER BY emoployee.id  
 const viewEmployees = () => {
-    console.log(chalk.blue.underline.bold('*****  A L L  E M P L O Y E E S  *****\n'));
+    console.log(chalk.green.underline.bold('*****  A L L  E M P L O Y E E S  *****\n'));
 
     const query = `SELECT employee.id, 
     employee.first_name, 
@@ -159,11 +113,21 @@ const viewEmployees = () => {
 
     db.query(query, (err, res) => {
         if (err) { console.log(err); }
-        
             console.table(res);
-            // sendStartUp(); 
-        
-       
+            sendStartUp(); 
+    });
+};
+const viewEmployeesByDepartment = () => {
+    console.log(chalk.green.underline.bold('*****  A L L  E M P L O Y E E S  B Y  D E P A R T M E N T S  *****\n'));
+    const query = `SELECT employee.id, 
+    employee.first_name, 
+    employee.last_name, job_role.title, job_role.salary, department.department_name AS department 
+    FROM employee JOIN job_role ON employee.role_id = job_role.id LEFT JOIN department ON job_role.department_id = department.id`;
+
+    db.query(query, (err, res) => {
+        if (err) { console.log(err); }
+            console.table(res);
+            sendStartUp(); 
     });
 };
 // **************** VIEW ALL DEPARTMENTs *** READ All, select * from
@@ -172,11 +136,11 @@ const viewDepartments = () => {
         if (err) {
             console.log(err);
         } else {
+            console.log(chalk.green.underline.bold('*****  A L L  D E P A R T M E N T S  *****\n'))
             console.table(res);
            sendStartUp();
         }
     })
-
 }
 // **************** ROLES Functionality *** View, Add and Update
 const viewRoles = () => {
@@ -184,16 +148,12 @@ const viewRoles = () => {
         if (err) {
             console.log(err);
         } else {
+            console.log(chalk.green.underline.bold('*****  A L L  R O L E S  *****\n'));
             console.table(res);
             sendStartUp();
         }
     })
 }
-
-
-
-
-
 // **************** ADD Employee  *** READ All, INSERT INTO
 const addEmployee = () => {
     inquirer.prompt([
@@ -206,11 +166,9 @@ const addEmployee = () => {
             type: 'input', 
             name: 'last_name', 
             message: 'Enter employee last name'
-        }, 
-       
+        }
     ])
     .then(nameInfo => {
-        
         const findRoles = `SELECT job_role.id, job_role.title FROM job_role`;
         db.query(findRoles, (err, res) => {
             if (err) { console.log(err); }
@@ -230,18 +188,15 @@ const addEmployee = () => {
                 }
             ])
             .then(selectedRole => {
-                const nameArray = [nameInfo.first_name, nameInfo.last_name, selectedRole.manager_id, selectedRole.role_id];
+                const nameArray = [nameInfo.first_name, nameInfo.last_name, selectedRole.mgmt, selectedRole.role];
+                console.log(nameArray);
                 const qry = `INSERT INTO employee (first_name, last_name, manager_id, role_id) VALUES (?, ?, ?, ?)`;
                 db.query(qry, nameArray, (err, res) => {
                     if (err) { console.log(err); }
-                    console.log(`Employee Created`);
-                    console.log(res);
+                    console.log(chalk.green.underline.bold('*****  E M P L O Y E E  C R E A T E D  *****\n'));
                     sendStartUp();
                 })
-                
-
             })
-
         })
     })
 }
@@ -254,8 +209,6 @@ const addRole = () => {
     db.query(dptSql, (err, res) => {
         if (err) {console.log(err);}
         dptData = res.map(({department_name, id}) => ({ name: department_name, value: id }));
-        console.log(dptData);
-
         inquirer.prompt([
             {
                 'type': 'input',
@@ -281,18 +234,14 @@ const addRole = () => {
             const insertRole = `INSERT INTO job_role (title, salary, department_id) VALUES (?, ?, ?)`;
             db.query(insertRole, roleParams, (err, res) => {
                 if (err) {console.log(err);}
-                console.log('New role created'); 
+                console.log((chalk.green.underline.bold('*****  N E W  R O L E  C R E A T E D  *****\n')); 
                 sendStartUp();
             })
     
         })
     })
-    // const roles = res.map(({id, title}) => ({name: title, value: id}));
     
 }
-
-
-// ************************** LEFT TO DO *****************************************
 // ************************** ADD DEPARTMENT ***********************
 const addDepartment = () => {
     inquirer.prompt([
@@ -306,7 +255,7 @@ const addDepartment = () => {
         const qry = `INSERT INTO department (department_name) VALUES (?)`;
         db.query(qry, departmentInfo.newDpt, (err, res) => {
             if (err) { console.log(err); }
-            console.log('Added new department');
+            console.log(chalk.green.underline.bold('*****  D E P A R T M E N T  A D D E D *****\n'));
             sendStartUp();
         })
     });
@@ -316,26 +265,25 @@ const addDepartment = () => {
 // INSERT INTO 
 // Log success 
 
-
-
-// ************************** UPDATE EMPLOYEE ROLE ***********************
+// ************************** UPDATE EMPLOYEE ROLE --- VERSION 2 ***********************
 const updateRole = () => {
     // Grab all the employees 
-    const empQuery = `SELECT * FROM employee`;
-    db.query(`SELECT * FROM employee`, (errs, data) => {
-        if(errs){ console.log(errs) }
+     const empQuery = `SELECT first_name, last_name, id FROM employee`;
+    db.query(empQuery, (err, res) => {
+        if(err){console.log(err) }
+        console.log(res);
         // Build Object Structure {First Last: ID}
-        const employeesObj = data.map(({ id, first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
+        const employeesObj = res.map(({ id, first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
+        console.log(employeesObj);
         inquirer.prompt([
             {
                 'type': 'list',
                 'name': 'selectedEmployee',
                 'message': 'Select the employee you wish to update',
                 'choices': employeesObj
-            }
+            },
+          
         ])
-        // We now have an array to choose from, so
-        
         .then((employeeChoiceData) => {
             // Get all roles from job_role table 
             const roleQry = `SELECT * FROM job_role`;
@@ -357,107 +305,13 @@ const updateRole = () => {
                     const updateQry = `UPDATE employee SET role_id = ? WHERE id = ?`;
                     db.query(updateQry, newRoleParams, (err, res) => {
                         if (err) { console.log(err); }
-                        console.log('Employee Role has been updated');
+                        console.log(chalk.green.underline.bold('*****  U P D A T E D  E M P L O Y E E  R O L E *****\n'));
+                        console.log(res);
                         sendStartUp();
                     });
                 });
             });
         });
-        
     });
 };
-// **************** VIEW Employees By DEPARTMENT *** READ All, select * from
-// Folder 22- Prepared Statements
-
-
-// **************** ADD Departments *** INSERT INTO department SET name
-
-// const addDepartment = () => {
-//     inquirer.prompt(departmentAdd)
-//     .then((departmentData) => {
-//         // Save the response
-//         const departmentToAdd = departmentData.newDepartmentName;
-//         // Push the New Department to an Array to feed into choices 
-//         departmentList.push(departmentToAdd);
-//         // Insert INTO Deparment Table
-//         db.query(`INSERT INTO department(department_name) SET ?`, departmentData.department_name, (err, res) => {
-//             if (err) { console.log(err); }
-//             else { sendStartUp(); }  
-//         })
-//     });
-// }
-
-
-
-
-
-// **************** REMOVE Department *** 
-// const removeDepartment = () => {
-//     db.query(`SELECT department.id, department.department_name FROM department;`, (err, res) => {
-//         if (err) {console.log(err);}
-//         else {
-//             const foundDepartmentName = res.map(department => ({name: department.department_name, value: department.id}));
-//             inquirer.prompt([
-//                 {
-//                     type: 'list', 
-//                     name: 'department',
-//                     message: 'Select department to delete',
-//                     coices: foundDepartmentName
-//                 }
-//             ])
-
-//             .then(res => {
-//                 db.query(`DELETE FROM department WHERE id = ?`, res.department, (err, res) => {
-//                     if (err) { console.log(err); }
-//                     else {
-//                         sendStartUp();
-//                     }
-//                 })
-//             })
-//         }
-//     })
-// }
-
-
-
-// **************** ADD a ROLE *** INSERT INTO job_role TABLE
-// const addRole = () => {
-//     db.query(`SELECT department.id, department.department_name FROM department;`,(err, res) => {
-//         if (err) { console.log(err); }
-//         else {
-//             const foundDepartments = res.map(depaerment => ({name: department.department_name, value: department.id }));
-
-//             inquirer.prompt([
-//                 {
-//                     name: 'title',
-//                     message: 'Type the new role'
-//                 },
-//                 {
-//                     name: 'salary',
-//                     message: 'Enter the salary for this role',
-//                 },
-//                 {
-//                     type: 'list',
-//                     name: 'department',
-//                     message: 'Select the approriate department for this role',
-//                     choices: foundDepartments
-//                 }
-//             ])
-//             .then(res => {
-//                 db.query('INSERT INTO job_role(title, salary, department_id) VALUE (?, ?, ?)', [res.title, res.salary, res.department], (err, res) => {
-//                     if (err) {
-//                         console.log(err);
-//                     } else {
-//                         sendStartUp();
-//                     }
-//                 })
-//             })
-//         }
-//     })
-// };
-
-
-
-
-
 init();
