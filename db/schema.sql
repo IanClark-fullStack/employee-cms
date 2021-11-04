@@ -7,20 +7,18 @@ USE company_db;
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     department_name VARCHAR(30)
-    /* PRIMARY KEY (id) */
 );
 
-
+DROP TABLE IF EXISTS job_role;
 CREATE TABLE job_role (
-    id INT NOT NULL AUTO_INCREMENT, 
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     title VARCHAR(30),
-    salary DECIMAL NOT NULL, 
-    PRIMARY KEY (id),
-    department_id INT, 
+    salary INT NOT NULL, 
+    department_id INT,
     FOREIGN KEY (department_id) REFERENCES department(id)
-    
 );
 
+DROP TABLE IF EXISTS employee;
 CREATE TABLE employee (
     id INT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (id), 
